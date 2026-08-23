@@ -128,3 +128,48 @@ def test_llm_config_error_not_retried():
         except llm.LLMError:
             pass
         assert m.call_count == 1  # not retried
+
+
+# ---------- rate limiter ----------
+def test_rate_limiter_allows_under_limit():
+    from app.core.rate_limit import RateLimiter
+    rl = RateLimiter(max_calls=3, window_seconds=60)
+    assert rl.check("u1")
+    assert rl.check("u1")
+    assert rl.check("u1")
+
+
+def test_rate_limiter_blocks_over_limit():
+    from app.core.rate_limit import RateLimiter
+    rl = RateLimiter(max_calls=2, window_seconds=60)
+    assert rl.check("u1")
+    assert rl.check("u1")
+    assert not rl.check("u1")  # third call blocked
+
+
+def test_rate_limiter_is_per_key():
+    from app.core.rate_limit import RateLimiter
+    rl = RateLimiter(max_calls=1, window_seconds=60)
+    assert rl.check("u1")
+    assert not rl.check("u1")
+    assert rl.check("u2")  # different user unaffected
+
+
+def test_groq_provider_path(monkeypatch):
+    from unittest.mock import MagicMock, patch
+    from app.core.config import settings
+    monkeypatch.setattr(settings, "llm_provider", "groq")
+    monkeypatch.setattr(settings, "groq_api_key", "test-key")
+    import importlib
+    import app.services.llm_service as llm
+    importlib.reload(llm)
+
+    def fake_completion(text):
+        msg = MagicMock(); msg.content = text
+        choice = MagicMock(); choice.message = msg
+        resp = MagicMock(); resp.choices = [choice]
+        return resp
+
+    with patch("openai.OpenAI") as MockOpenAI:
+        MockOpenAI.return_value.chat.completions.create.return_value = fake_completion("Groq answer.")
+        assert llm.analyze("q", "short filing text") == "Groq answer."

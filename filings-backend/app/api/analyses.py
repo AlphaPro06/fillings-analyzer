@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from app.api.deps import get_current_user
+from app.core.rate_limit import analysis_limiter
 from app.db.database import get_db
 from app.models.models import Analysis, Document, User
 from app.schemas.schemas import AnalysisCreate, AnalysisOut
@@ -21,6 +22,13 @@ def create_analysis(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
 ):
+    # Rate-limit the expensive LLM path per user before doing any work.
+    if not analysis_limiter.check(f"user:{current_user.id}"):
+        raise HTTPException(
+            status_code=status.HTTP_429_TOO_MANY_REQUESTS,
+            detail="Too many analysis requests. Please wait a moment and try again.",
+        )
+
     document = _get_owned_document(document_id, current_user, db)
     question = payload.question.strip()
 

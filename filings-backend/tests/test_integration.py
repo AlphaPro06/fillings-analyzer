@@ -155,3 +155,27 @@ def test_analysis_on_missing_document_404(auth_client):
             json={"question": "anything?"},
         )
         assert r.status_code == 404
+
+
+def test_analysis_rate_limit_returns_429(auth_client):
+    from unittest.mock import patch
+    from app.core.rate_limit import analysis_limiter
+
+    files = {"file": ("acme.pdf", _make_pdf_bytes(), "application/pdf")}
+    doc_id = auth_client.post("/documents", files=files).json()["id"]
+
+    # Temporarily shrink the limit so the test is fast and deterministic.
+    original_max = analysis_limiter.max_calls
+    analysis_limiter.max_calls = 2
+    analysis_limiter._hits.clear()
+    try:
+        with patch("app.api.analyses.analyze", return_value="ok"):
+            # First 2 allowed (use distinct questions to avoid the cache path)
+            assert auth_client.post(f"/documents/{doc_id}/analyses", json={"question": "q one?"}).status_code == 201
+            assert auth_client.post(f"/documents/{doc_id}/analyses", json={"question": "q two?"}).status_code == 201
+            # Third exceeds the limit
+            r = auth_client.post(f"/documents/{doc_id}/analyses", json={"question": "q three?"})
+            assert r.status_code == 429
+    finally:
+        analysis_limiter.max_calls = original_max
+        analysis_limiter._hits.clear()

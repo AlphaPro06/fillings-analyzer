@@ -69,11 +69,34 @@ def _call_anthropic(prompt: str, max_tokens: int) -> str:
     return "".join(parts).strip()
 
 
+def _call_groq(prompt: str, max_tokens: int) -> str:
+    """Make one call to Groq's OpenAI-compatible API (hosted, fast, free tier)."""
+    from openai import OpenAI
+
+    if not settings.groq_api_key:
+        raise LLMError("GROQ_API_KEY is not configured")
+    client = OpenAI(
+        base_url=settings.groq_base_url,
+        api_key=settings.groq_api_key,
+    )
+    resp = client.chat.completions.create(
+        model=settings.groq_model,
+        max_tokens=max_tokens,
+        messages=[
+            {"role": "system", "content": _SYSTEM_PROMPT},
+            {"role": "user", "content": prompt},
+        ],
+    )
+    return (resp.choices[0].message.content or "").strip()
+
+
 def _call_provider(prompt: str, max_tokens: int) -> str:
     """Dispatch a single model call to the configured provider."""
     provider = settings.llm_provider.lower()
     if provider == "ollama":
         return _call_ollama(prompt, max_tokens)
+    if provider == "groq":
+        return _call_groq(prompt, max_tokens)
     if provider == "anthropic":
         return _call_anthropic(prompt, max_tokens)
     raise LLMError(f"Unknown LLM provider: {settings.llm_provider!r}")

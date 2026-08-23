@@ -84,7 +84,7 @@ documents belonging to other users.
 ### With Docker (recommended)
 
 ```bash
-cp ..env.example ..env          # then set ANTHROPIC_API_KEY and a real SECRET_KEY
+cp .env.example .env          # then set ANTHROPIC_API_KEY and a real SECRET_KEY
 docker compose up --build
 ```
 
@@ -96,7 +96,7 @@ on startup. Interactive API docs are at `http://localhost:8000/docs`.
 ```bash
 python -m venv .venv && source .venv/bin/activate
 pip install -r requirements.txt
-cp ..env.example ..env          # set DATABASE_URL, SECRET_KEY, ANTHROPIC_API_KEY
+cp .env.example .env          # set DATABASE_URL, SECRET_KEY, ANTHROPIC_API_KEY
 alembic upgrade head
 uvicorn app.main:app --reload
 ```

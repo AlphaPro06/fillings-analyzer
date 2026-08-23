@@ -2,9 +2,9 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
 class Settings(BaseSettings):
-    """Application configuration, loaded from environment variables / ..env file."""
+    """Application configuration, loaded from environment variables / .env file."""
 
-    model_config = SettingsConfigDict(env_file="..env", extra="ignore")
+    model_config = SettingsConfigDict(env_file=".env", extra="ignore")
 
     # Database
     database_url: str = "postgresql://postgres:postgres@localhost:5432/filings"
@@ -28,6 +28,11 @@ class Settings(BaseSettings):
     # Ollama exposes an OpenAI-compatible API at this base URL by default.
     ollama_base_url: str = "http://localhost:11434/v1"
     ollama_model: str = "llama3.1"
+
+    # Groq settings (used when llm_provider == "groq") — hosted, OpenAI-compatible.
+    groq_api_key: str = ""
+    groq_base_url: str = "https://api.groq.com/openai/v1"
+    groq_model: str = "llama-3.1-8b-instant"
 
     # Uploads
     upload_dir: str = "uploads"
