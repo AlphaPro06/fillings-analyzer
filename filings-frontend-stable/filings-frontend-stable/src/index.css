@@ -1,0 +1,113 @@
+/* ============================================================
+   Filings Analyzer — design system
+   Direction: a serious analytical instrument for reading filings.
+   Palette: ink navy + paper, warm gold for actions.
+   Type: Fraunces (display serif) + Inter (interface sans).
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;450;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  --ink: #17233b;
+  --ink-soft: #33415c;
+  --paper: #f7f4ec;
+  --paper-pure: #fffdf8;
+  --line: #e2dccd;
+  --gold: #b8863b;
+  --gold-deep: #966c2a;
+  --sage: #4a6152;
+  --rust: #a4472f;
+
+  --shadow-sm: 0 1px 2px rgba(23, 35, 59, 0.06);
+  --shadow-md: 0 4px 16px rgba(23, 35, 59, 0.08);
+  --shadow-lg: 0 12px 40px rgba(23, 35, 59, 0.12);
+
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  --radius: 4px;
+  --radius-lg: 8px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { -webkit-font-smoothing: antialiased; }
+
+body {
+  font-family: var(--font-body);
+  background: var(--paper);
+  color: var(--ink);
+  line-height: 1.55;
+  font-size: 15px;
+}
+
+button, input, textarea { font-family: inherit; font-size: inherit; }
+button { cursor: pointer; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.7rem 1.3rem;
+  background: var(--ink);
+  color: var(--paper-pure);
+  border: none;
+  border-radius: var(--radius);
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  transition: background 0.18s ease, transform 0.1s ease;
+}
+.btn:hover:not(:disabled) { background: #0f1a2e; }
+.btn:active:not(:disabled) { transform: translateY(1px); }
+.btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.btn-gold { background: var(--gold); }
+.btn-gold:hover:not(:disabled) { background: var(--gold-deep); }
+
+.btn-ghost {
+  background: transparent;
+  color: var(--ink-soft);
+  border: 1px solid var(--line);
+}
+.btn-ghost:hover:not(:disabled) { background: var(--paper-pure); color: var(--ink); }
+
+.input {
+  width: 100%;
+  padding: 0.7rem 0.9rem;
+  background: var(--paper-pure);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  color: var(--ink);
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+.input:focus {
+  outline: none;
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(184, 134, 59, 0.14);
+}
+
+.label {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  margin-bottom: 0.4rem;
+}
+
+.eyebrow {
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--gold-deep);
+}
+
+:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }

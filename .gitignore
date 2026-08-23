@@ -1,0 +1,21 @@
+# Python / backend
+__pycache__/
+*.pyc
+.venv/
+venv/
+*.db
+.env
+
+# Node / frontend
+node_modules/
+dist/
+*.local
+
+# Env files anywhere
+**/.env
+.env.*
+
+# OS / editor junk
+.DS_Store
+.idea/
+.vscode/
